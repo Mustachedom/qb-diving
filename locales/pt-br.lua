@@ -32,6 +32,11 @@ local Translations = {
         ["oxygen_one_minute"] = "Você tem menos de 1 minuto de ar restante",
         ["oxygen_running_out"] = "Seu equipamento de mergulho está ficando sem ar",
     },
+    failedDist = {
+        warn = '^3 [AVISO] ^7 Jogador ^7 (%{citizenid}) falhou em uma verificação de distância. ^1 (%{current}/3)',
+        kicked = 'Você foi expulso por falhar em várias verificações de distância, a equipe foi notificada.',
+    },
+    sold = 'Você vendeu %{amount} de coral por $%{price}!',
 }
 
 if GetConvar('qb_locale', 'en') == 'pt-br' then

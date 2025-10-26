@@ -29,6 +29,11 @@ local Translations = {
         ["oxygen_one_minute"] = "Le queda menos de 1 minuto de aire",
         ["oxygen_running_out"] = "Su equipo de buceo se está quedando sin aire",
     },
+    sold = '¡Has vendido %{amount} coral por $%{price}!',
+    failDist = {
+        warn = '^3 [ADVERTENCIA] ^7 Jugador ^7 (%{citizenid}) falló una verificación de distancia. ^1 (%{current}/3)',
+        kicked = 'Has sido expulsado por fallar múltiples verificaciones de distancia, el personal ha sido notificado.',
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'es' then

@@ -32,6 +32,11 @@ local Translations = {
         ["oxygen_one_minute"] = "You have less than 1 minute of air remaining",
         ["oxygen_running_out"] = "Your diving gear is running out of air",
     },
+    failedDist = {
+        warn = '^3 [WARNING] ^7 Player ^7 (%{citizenid}) failed a distance check. ^1 (%{current}/3)',
+        kicked = 'You were kicked for failing distance checks multiple times, Staff have been notified.',
+    },
+    sold = 'You sold %{amount} coral for $%{price}!',
 }
 
 Lang = Lang or Locale:new({

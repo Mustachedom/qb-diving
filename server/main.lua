@@ -1,33 +1,89 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-local currentDivingArea = math.random(1, #Config.CoralLocations)
-local AvailableCorals = {}
+local Items = {
+    {item = "dendrogyra_coral", min = 1, max = 5},
+    {item = "antipatharia_coral", min = 2, max = 7},
+}
 
--- Functions
+local Blips = {
+    vector3(-2838.8, -376.1, 3.55),
+    vector3(-3288.2, -67.58, 2.79),
+    vector3(-3367.24, 1617.89, 1.39),
+    vector3(3002.5, -1538.28, -27.36),
+    vector3(3421.58, 1975.68, 0.86),
+    vector3(2720.14, -2136.28, 0.74),
+    vector3(536.69, 7253.75, 1.69),
+}
 
-local function getItemPrice(amount, price)
-    for k, v in pairs(Config.BonusTiers) do
-        local modifier = #Config.BonusTiers == k and amount >= v.minAmount or amount >= v.minAmount and amount <= v.maxAmount
-        if modifier then
-            local percent = math.random(v.minBonus, v.maxBonus) / 100
-            local bonus = price * percent
-            price = price + bonus
-            price = math.ceil(price)
-        end
-    end
-    return price
+local Blip = Blips[math.random(1, #Blips)]
+local corals = {
+    {coords = vector3(-2849.25, -377.58, -40.23),    busy = false, PickedUp = false},
+    {coords = vector3(-2838.43, -363.63, -39.45),    busy = false, PickedUp = false},
+    {coords = vector3(-2887.04, -394.87, -40.91),    busy = false, PickedUp = false},
+    {coords = vector3(-2808.99, -385.56, -39.32),    busy = false, PickedUp = false},
+    {coords = vector3(-3275.03, -38.58, -19.21),     busy = false, PickedUp = false},
+    {coords = vector3(-3273.73, -76.0, -26.81),      busy = false, PickedUp = false},
+    {coords = vector3(-3346.53, -50.4, -35.84),      busy = false, PickedUp = false},
+    {coords = vector3(-3388.01, 1635.88, -39.41),    busy = false, PickedUp = false},
+    {coords = vector3(-3354.19, 1549.3, -38.21),     busy = false, PickedUp = false},
+    {coords = vector3(-3320.72, 1620.12, -40.11),    busy = false, PickedUp = false},
+    {coords = vector3(-3326.04, 1636.43, -40.98),    busy = false, PickedUp = false},
+    {coords = vector3(2978.05, -1509.07, -24.96),    busy = false, PickedUp = false},
+    {coords = vector3(3004.42, -1576.95, -29.36),    busy = false, PickedUp = false},
+    {coords = vector3(2951.65, -1560.69, -28.36),    busy = false, PickedUp = false},
+    {coords = vector3(3421.69, 1976.54, -50.64),     busy = false, PickedUp = false},
+    {coords = vector3(3424.07, 1957.46, -53.04),     busy = false, PickedUp = false},
+    {coords = vector3(3424.07, 1957.46, -53.04),     busy = false, PickedUp = false},
+    {coords = vector3(3434.65, 1993.73, -49.84),     busy = false, PickedUp = false},
+    {coords = vector3(3415.42, 1965.25, -52.04),     busy = false, PickedUp = false},
+    {coords = vector3(2724.0, -2134.95, -19.33),     busy = false, PickedUp = false},
+    {coords = vector3(2710.68, -2156.06, -18.63),    busy = false, PickedUp = false},
+    {coords = vector3(2702.84, -2139.29, -18.51),    busy = false, PickedUp = false},
+    {coords = vector3(542.31, 7245.37, -30.01),      busy = false, PickedUp = false},
+    {coords = vector3(528.21, 7223.26, -29.51),      busy = false, PickedUp = false},
+    {coords = vector3(510.36, 7254.97, -32.11),      busy = false, PickedUp = false},
+    {coords = vector3(525.37, 7259.12, -30.51),      busy = false, PickedUp = false},
+}
+GlobalState.QBDiving = corals
+
+local function busyState(num)
+    corals[num].PickedUp = true
+    GlobalState.QBDiving = corals
+    CreateThread(function()
+        Wait(Config.RespawnTime * 60000)
+        corals[num].PickedUp = false
+        GlobalState.QBDiving = corals
+    end)
 end
 
-local function hasCoral(src)
+local prices = {
+    dendrogyra_coral = math.random(70, 100),
+    antipatharia_coral = math.random(50, 70),
+}
+
+local drops = {}
+local function failDistance(source)
+    local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    AvailableCorals = {}
-    for _, v in pairs(Config.CoralTypes) do
-        local item = Player.Functions.GetItemByName(v.item)
-        if item then AvailableCorals[#AvailableCorals + 1] = v end
+    if drops[Player.PlayerData.citizenid] then
+        drops[Player.PlayerData.citizenid] = drops[Player.PlayerData.citizenid] + 1
+        print(Lang:t('failedDist.warn', {citizenid = Player.PlayerData.citizenid, current = drops[Player.PlayerData.citizenid]}))
+        if drops[Player.PlayerData.citizenid] >= 3 then
+            DropPlayer(src, Lang:t('failedDist.kicked'))
+        end
+    else
+        print(Lang:t('failedDist.warn', {citizenid = Player.PlayerData.citizenid, current = 1}))
+        drops[Player.PlayerData.citizenid] = 1
     end
-    return next(AvailableCorals)
 end
 
--- Events
+local function checkDistance(src, loc, dist)
+    local distance = #(GetEntityCoords(GetPlayerPed(src)) - vector3(loc.x, loc.y, loc.z))
+    if distance <= dist then
+        return true
+    else
+        failDistance(src)
+        return false
+    end
+end
 
 RegisterNetEvent('qb-diving:server:CallCops', function(coords)
     for _, Player in pairs(QBCore.Functions.GetQBPlayers()) do
@@ -46,62 +102,76 @@ RegisterNetEvent('qb-diving:server:CallCops', function(coords)
     end
 end)
 
-RegisterNetEvent('qb-diving:server:SellCorals', function()
+
+RegisterNetEvent('qb-diving:server:TakeCoral', function(coral)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
-    if hasCoral(src) then
-        for _, v in pairs(AvailableCorals) do
-            local item = Player.Functions.GetItemByName(v.item)
-            local price = item.amount * v.price
-            local reward = getItemPrice(item.amount, price)
-            exports['qb-inventory']:RemoveItem(src, item.name, item.amount, false, 'qb-diving:server:SellCorals')
-            Player.Functions.AddMoney('cash', reward, 'qb-diving:server:SellCorals')
-            TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[item.name], 'remove')
-        end
-    else
-        TriggerClientEvent('QBCore:Notify', src, Lang:t('error.no_coral'), 'error')
+    if not checkDistance(src, corals[coral].coords, 8.0) then return end
+
+    if corals[coral].PickedUp then
+        return
     end
+
+    if not corals[coral].busy then
+        return
+    end
+
+    corals[coral].busy = false
+    busyState(coral)
+
+    local type = Items[math.random(1, #Items)]
+    local itemName, amount = type.item, math.random(type.min, type.max)
+    exports['qb-inventory']:AddItem(src, itemName, amount, false, false, 'qb-diving:server:TakeCoral')
+    TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items[itemName], 'add', amount)
 end)
 
-RegisterNetEvent('qb-diving:server:TakeCoral', function(area, coral, bool)
+RegisterNetEvent('qb-diving:server:sellCorals', function(location)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
-    local coralType = math.random(1, #Config.CoralTypes)
-    local amount = math.random(1, Config.CoralTypes[coralType].maxAmount)
-    local ItemData = QBCore.Shared.Items[Config.CoralTypes[coralType].item]
 
-    if amount > 1 then
-        for _ = 1, amount, 1 do
-            exports['qb-inventory']:AddItem(src, ItemData['name'], 1, false, false, 'qb-diving:server:TakeCoral')
-            TriggerClientEvent('qb-inventory:client:ItemBox', src, ItemData, 'add')
-            Wait(250)
+    if not checkDistance(src, Config.SellLocations[location].coords, 5.0) then return end
+
+    local totalCoral, price = 0, 0
+    for k, v in pairs(prices) do
+        local itemData = Player.Functions.GetItemByName(k)
+        if itemData and itemData.name == 'dendrogyra_coral' then
+            if exports['qb-inventory']:RemoveItem(src, 'dendrogyra_coral', itemData.amount, false, 'qb-diving:server:sellCorals') then
+                price = price + (itemData.amount * prices['dendrogyra_coral'])
+                totalCoral = totalCoral + itemData.amount
+                TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items['dendrogyra_coral'], 'remove', itemData.amount)
+            end
+        elseif itemData and itemData.name == 'antipatharia_coral' then
+            if exports['qb-inventory']:RemoveItem(src, 'antipatharia_coral', itemData.amount, false, 'qb-diving:server:sellCorals') then
+                price = price + (itemData.amount * prices['antipatharia_coral'])
+                totalCoral = totalCoral + itemData.amount
+                TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items['antipatharia_coral'], 'remove', itemData.amount)
+            end
         end
-    else
-        exports['qb-inventory']:AddItem(src, ItemData['name'], amount, false, false, 'qb-diving:server:TakeCoral')
-        TriggerClientEvent('qb-inventory:client:ItemBox', src, ItemData, 'add')
     end
-
-    if (Config.CoralLocations[area].TotalCoral - 1) == 0 then
-        for _, v in pairs(Config.CoralLocations[currentDivingArea].coords.Coral) do
-            v.PickedUp = false
-        end
-
-        Config.CoralLocations[currentDivingArea].TotalCoral = Config.CoralLocations[currentDivingArea].DefaultCoral
-        local newLocation = math.random(1, #Config.CoralLocations)
-        while newLocation == currentDivingArea do
-            Wait(0)
-            newLocation = math.random(1, #Config.CoralLocations)
-        end
-        currentDivingArea = newLocation
-        TriggerClientEvent('qb-diving:client:NewLocations', -1)
+    if price > 0 then
+        Player.Functions.AddMoney('cash', price, 'sold-corals')
+        QBCore.Functions.Notify(src, Lang:t('sold', {amount = totalCoral, price = price}), 'success')
     else
-        Config.CoralLocations[area].coords.Coral[coral].PickedUp = bool
-        Config.CoralLocations[area].TotalCoral = Config.CoralLocations[area].TotalCoral - 1
+        QBCore.Functions.Notify(src, Lang:t('error.no_coral'), 'error')
     end
-    TriggerClientEvent('qb-diving:client:UpdateCoral', -1, area, coral, bool)
 end)
+
+RegisterNetEvent('qb-diving:server:busy', function(coral)
+    local src = source
+    if not checkDistance(src, corals[coral].coords, 5.0) then return end
+    corals[coral].busy = true
+    GlobalState.QBDiving = corals
+end)
+
+RegisterNetEvent('qb-diving:server:notBusy', function(coral)
+    local src = source
+    if not checkDistance(src, corals[coral].coords, 5.0) then return end
+    corals[coral].busy = false
+    GlobalState.QBDiving = corals
+end)
+
 
 RegisterNetEvent('qb-diving:server:removeItemAfterFill', function()
     local src = source
@@ -112,7 +182,7 @@ end)
 -- Callbacks
 
 QBCore.Functions.CreateCallback('qb-diving:server:GetDivingConfig', function(_, cb)
-    cb(Config.CoralLocations, currentDivingArea)
+    cb(Blip)
 end)
 
 -- Items

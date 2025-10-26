@@ -32,6 +32,11 @@ local Translations = {
         ["oxygen_one_minute"] = "Du har mindre end 1 minuts luft tilbage",
         ["oxygen_running_out"] = " Du er ved at løbe tør for luft",
     },
+    sold = 'Du solgte %{amount} koraller for $%{price}!',
+    failDist = {
+        warn = '^3 [ADVARSEL] ^7 Spiller ^7 (%{citizenid}) mislykkedes en afstandskontrol. ^1 (%{current}/3)',
+        kicked = 'Du blev smidt ud for at have mislykkedes afstandskontroller flere gange, personalet er blevet underrettet.',
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'da' then

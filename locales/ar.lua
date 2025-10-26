@@ -29,6 +29,11 @@ local Translations = {
         ["oxygen_one_minute"] = "لديك أقل من ستين ثانية متبقية",
         ["oxygen_running_out"] = "الأكسجين ينفد منك",
     },
+    sold = 'لقد بعت %{amount} مرجان مقابل $%{price}!',
+    failDist = {
+        warn = '^3 [تحذير] ^7 اللاعب ^7 (%{citizenid}) فشل في فحص المسافة. ^1 (%{current}/3)',
+        kicked = 'تم طردك لفشلك في فحوصات المسافة عدة مرات، تم إعلام الطاقم.',
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'ar' then

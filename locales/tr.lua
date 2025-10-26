@@ -29,6 +29,11 @@ local Translations = {
         ["oxygen_one_minute"] = "1 dakikadan az havanız kaldı",
         ["oxygen_running_out"] = "Dalış teçhizatınızın havası bitiyor",
     },
+    failedDist = {
+        warn = '^3 [UYARI] ^7 Oyuncu ^7 (%{citizenid}) mesafe kontrolünü geçemedi. ^1 (%{current}/3)',
+        kicked = 'Birden fazla mesafe kontrolünü geçemediğiniz için atıldınız, personel bilgilendirildi.',
+    },
+    sold = '%{amount} mercan $%{price} karşılığında sattınız!',
 }
 
 if GetConvar('qb_locale', 'en') == 'tr' then

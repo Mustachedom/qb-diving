@@ -32,6 +32,11 @@ local Translations = {
         ["oxygen_one_minute"] = "Du hast weniger als 1 Minute Luft übrig",
         ["oxygen_running_out"] = "Dein Taucheranzug geht die Luft aus",
     },
+    failedDist = {
+        warn = '^3 [WARNUNG] ^7 Spieler ^7 (%{citizenid}) hat eine Distanzkontrolle nicht bestanden. ^1 (%{current}/3)',
+        kicked = 'Du wurdest gekickt, weil du mehrere Distanzkontrollen nicht bestanden hast. Das Personal wurde benachrichtigt.',
+    },
+    sold = 'Du hast %{amount} Korallen für $%{price} verkauft!',
 }
 
 if GetConvar('qb_locale', 'en') == 'de' then

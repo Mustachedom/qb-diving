@@ -29,6 +29,11 @@ local Translations = {
         ["oxygen_one_minute"] = "Teil on järelejäänud vähem kui 1 minut õhku",
         ["oxygen_running_out"] = "Õhk hakkab otsa saama",
     },
+    failedDist = {
+        warn = '^3 [HOIATUS] ^7 Mängija ^7 (%{citizenid}) ebaõnnestus kauguse kontroll. ^1 (%{current}/3)',
+        kicked = 'Teid visati välja mitme kauguse kontrolli ebaõnnestumise tõttu, töötajad on teavitatud.',
+    },
+    sold = 'Müüsid %{amount} koralli hinnaga $%{price}!',
 }
 
 if GetConvar('qb_locale', 'en') == 'et' then

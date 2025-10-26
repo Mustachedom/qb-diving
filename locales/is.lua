@@ -29,6 +29,11 @@ local Translations = {
         ["oxygen_one_minute"] = "Þú átt innan við 1 mínútu af lofti eftir",
         ["oxygen_running_out"] = "Köfunarbúnaðurinn þinn er að verða uppiskroppa með loftið",
     },
+    sold = 'Þú seldir %{amount} kóral fyrir $%{price}!',
+    failDist = {
+        warn = '^3 [VIÐVÖRUN] ^7 Spilari ^7 (%{citizenid}) mistókst fjarlægðarpróf. ^1 (%{current}/3)',
+        kicked = 'Þú varst rekinn fyrir að hafa mistekist fjarlægðarpróf mörgum sinnum, starfsfólk hefur verið látið vita.',
+    },
 }
 
 if GetConvar('qb_locale', 'en') == 'is' then

@@ -29,6 +29,11 @@ local Translations = {
         ["oxygen_one_minute"] = "Hai meno di 1 minuto di aria rimanente",
         ["oxygen_running_out"] = "La tua attrezzatura da sub sta finendo l'aria",
     },
+    failedDist = {
+        warn = '^3 [AVVISO] ^7 Il giocatore ^7 (%{citizenid}) non è riuscito a superare il controllo distanza. ^1 (%{current}/3)',
+        kicked = 'Sei stato espulso per aver fallito più controlli distanza, lo staff è stato avvisato.',
+    },
+    sold = 'Hai venduto %{amount} di coralli per $%{price}!',
 }
 
 if GetConvar('qb_locale', 'en') == 'it' then
